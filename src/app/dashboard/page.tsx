@@ -1,14 +1,17 @@
-// app/dashboard/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { auth } from "../../firebaseConfig";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
-  const [idToken, setIdToken] = useState<string>("");
+  const [decodedToken, setDecodedToken] = useState<{
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any;
+  } | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -16,7 +19,8 @@ export default function DashboardPage() {
       if (currentUser) {
         setUser(currentUser);
         const token = await currentUser.getIdToken();
-        setIdToken(token);
+        const decoded = jwtDecode(token);
+        setDecodedToken(decoded);
       } else {
         router.push("/login");
       }
@@ -34,7 +38,8 @@ export default function DashboardPage() {
   return (
     <div>
       <h1>ようこそ、{user.email || user.displayName}さん</h1>
-      <p>IDトークン: {idToken}</p>
+      <h2>token:</h2>
+      <pre>{JSON.stringify(decodedToken, null, 2)}</pre>
       <button onClick={handleSignOut}>サインアウト</button>
     </div>
   );
