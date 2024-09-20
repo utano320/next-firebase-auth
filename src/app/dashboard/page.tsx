@@ -1,3 +1,4 @@
+// app/dashboard/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,12 +8,15 @@ import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
+  const [idToken, setIdToken] = useState<string>("");
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
+        const token = await currentUser.getIdToken();
+        setIdToken(token);
       } else {
         router.push("/login");
       }
@@ -30,6 +34,7 @@ export default function DashboardPage() {
   return (
     <div>
       <h1>ようこそ、{user.email || user.displayName}さん</h1>
+      <p>IDトークン: {idToken}</p>
       <button onClick={handleSignOut}>サインアウト</button>
     </div>
   );
