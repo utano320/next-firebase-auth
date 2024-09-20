@@ -17,7 +17,7 @@ export const sendEmailLink = async (email: string): Promise<void> => {
   const actionCodeSettings = {
     url:
       process.env.NEXT_PUBLIC_ACTION_CODE_URL ||
-      "http://localhost:3000/dashboard",
+      "http://localhost:7001/dashboard",
     handleCodeInApp: true,
   };
   await sendSignInLinkToEmail(auth, email, actionCodeSettings);
