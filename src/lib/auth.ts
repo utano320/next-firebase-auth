@@ -6,6 +6,8 @@ import {
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
   signInWithEmailLink,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
 } from "firebase/auth";
 
 export const signInWithGoogle = async (): Promise<void> => {
@@ -32,5 +34,17 @@ export const completeEmailSignIn = async (url: string): Promise<void> => {
     }
     await signInWithEmailLink(auth, email, url);
     window.localStorage.removeItem("emailForSignIn");
+  }
+};
+
+export const reauthenticateWithEmailLink = async (
+  email: string,
+  url: string
+): Promise<void> => {
+  if (isSignInWithEmailLink(auth, url)) {
+    const credential = EmailAuthProvider.credentialWithLink(email, url);
+    if (auth.currentUser) {
+      await reauthenticateWithCredential(auth.currentUser, credential);
+    }
   }
 };
